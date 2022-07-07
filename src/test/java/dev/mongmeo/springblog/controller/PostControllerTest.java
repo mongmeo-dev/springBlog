@@ -1,6 +1,7 @@
 package dev.mongmeo.springblog.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -9,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.mongmeo.springblog.dto.PostRequestDto;
 import dev.mongmeo.springblog.dto.PostResponseDto;
 import dev.mongmeo.springblog.entity.PostEntity;
+import dev.mongmeo.springblog.exception.NotFoundException;
 import dev.mongmeo.springblog.service.PostService;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -50,6 +52,37 @@ class PostControllerTest {
         .andExpect(jsonPath("$[*].createdAt").exists())
         .andExpect(jsonPath("$[*].updatedAt").exists())
         .andExpect(jsonPath("$.length()").value(5))
+        .andDo(print());
+  }
+
+  @Test
+  @DisplayName("PathVariable로 id를 전달하면 포스트 하나를 받아야 함")
+  void getPostByIdTest() throws Exception {
+    // given
+    Mockito.when(postService.getPostById(anyLong())).thenReturn(createDummyPosts().get(0));
+
+    // when, then
+    mockMvc.perform(MockMvcRequestBuilders.get("/api/posts/1"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").exists())
+        .andExpect(jsonPath("$.title").exists())
+        .andExpect(jsonPath("$.content").exists())
+        .andExpect(jsonPath("$.createdAt").exists())
+        .andExpect(jsonPath("$.updatedAt").exists())
+        .andDo(print());
+  }
+
+  @Test
+  @DisplayName("PathVariable로 전달한 id를 가진 게시물이 없다면 상태코드 404를 내려줘야 함")
+  void getPostByIdExceptionTest() throws Exception {
+    // given
+    Mockito.when(postService.getPostById(anyLong())).thenThrow(NotFoundException.class);
+
+    // when, then
+    mockMvc.perform(MockMvcRequestBuilders.get("/api/posts/100"))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.code").value("404"))
+        .andExpect(jsonPath("$.message").exists())
         .andDo(print());
   }
 

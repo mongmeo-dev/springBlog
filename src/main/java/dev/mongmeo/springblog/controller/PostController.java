@@ -3,6 +3,7 @@ package dev.mongmeo.springblog.controller;
 import dev.mongmeo.springblog.dto.ErrorResponseDto;
 import dev.mongmeo.springblog.dto.PostRequestDto;
 import dev.mongmeo.springblog.dto.PostResponseDto;
+import dev.mongmeo.springblog.exception.NotFoundException;
 import dev.mongmeo.springblog.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +38,19 @@ public class PostController {
   @GetMapping
   public List<PostResponseDto> getAllPosts() {
     return postService.getAllPosts();
+  }
+
+  @Operation(summary = "아이디로 게시물 단건 조회")
+  @ApiResponse(responseCode = "200", description = "게시물 반환")
+  @ApiResponse(
+      responseCode = "404",
+      description = "입력받은 id를 가진 게시물을 찾을 수 없음",
+      content = {@Content(schema = @Schema(oneOf = {ErrorResponseDto.class}))})
+  @GetMapping("/{id}")
+  public PostResponseDto getPostById(
+      @Parameter(description = "게시물 id") @PathVariable("id") long id
+  ) {
+    return postService.getPostById(id);
   }
 
   @Operation(summary = "게시물 등록하기")
@@ -62,5 +77,15 @@ public class PostController {
         .build();
 
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
+  }
+
+  @ExceptionHandler(NotFoundException.class)
+  public ResponseEntity<ErrorResponseDto> notFoundException(NotFoundException e) {
+    ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
+        .code(404)
+        .message("게시물을 찾을 수 없습니다.")
+        .build();
+
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
   }
 }
