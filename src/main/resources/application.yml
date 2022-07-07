@@ -4,6 +4,10 @@ spring:
     username: ENC(+Vltkl7cvDg71qVXEyMoCw==)
     password: ENC(wMHs50BVfRUCxCNHm3T03EfO9pcycbx0)
 
+  jpa:
+    hibernate:
+      ddl-auto: update
+
 jasypt:
   encryptor:
     bean: jasyptStringEncryptor
