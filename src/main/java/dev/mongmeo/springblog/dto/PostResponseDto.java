@@ -13,6 +13,9 @@ import lombok.Getter;
 @Builder
 public class PostResponseDto {
 
+  @Schema(description = "게시물 ID", example = "0")
+  private Long id;
+
   @Schema(description = "게시물 제목", example = "게시물 제목입니다.")
   private String title;
 
