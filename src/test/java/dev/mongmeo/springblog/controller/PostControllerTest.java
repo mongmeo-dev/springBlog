@@ -1,9 +1,12 @@
 package dev.mongmeo.springblog.controller;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.mongmeo.springblog.dto.PostRequestDto;
 import dev.mongmeo.springblog.dto.PostResponseDto;
 import dev.mongmeo.springblog.entity.PostEntity;
 import dev.mongmeo.springblog.service.PostService;
@@ -18,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -46,6 +50,67 @@ class PostControllerTest {
         .andExpect(jsonPath("$[*].createdAt").exists())
         .andExpect(jsonPath("$[*].updatedAt").exists())
         .andExpect(jsonPath("$.length()").value(5))
+        .andDo(print());
+  }
+
+  @Test
+  @DisplayName("게시물을 만들어 반환해야 함")
+  void createPostTest() throws Exception {
+    // given
+    PostRequestDto dto = PostRequestDto.builder()
+        .title("test title")
+        .content("test content")
+        .build();
+
+    PostResponseDto response = PostResponseDto.builder()
+        .id(1L)
+        .title(dto.getTitle())
+        .content(dto.getContent())
+        .createdAt(LocalDateTime.now())
+        .updatedAt(LocalDateTime.now())
+        .build();
+
+    Mockito.when(postService.createPost(any())).thenReturn(response);
+
+    // when, then
+    ObjectMapper objectMapper = new ObjectMapper();
+    String dtoJson = objectMapper.writeValueAsString(dto);
+    mockMvc.perform(
+            MockMvcRequestBuilders
+                .post("/api/posts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(dtoJson)
+        )
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").exists())
+        .andExpect(jsonPath("$.title").value("test title"))
+        .andExpect(jsonPath("$.content").value("test content"))
+        .andExpect(jsonPath("$.createdAt").exists())
+        .andExpect(jsonPath("$.updatedAt").exists())
+        .andDo(print());
+  }
+
+  @Test
+  @DisplayName("validation에 실패하면 상태코드 400을 내려줘야 함")
+  void createPostValidationTest() throws Exception {
+    // given
+    PostRequestDto dto = PostRequestDto.builder()
+        .title("test title test title test title test title test title test title test title test ")
+        .content("test content")
+        .build();
+
+    // when, then
+    ObjectMapper objectMapper = new ObjectMapper();
+    String dtoJson = objectMapper.writeValueAsString(dto);
+    mockMvc.perform(
+            MockMvcRequestBuilders
+                .post("/api/posts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(dtoJson)
+        )
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").exists())
+        .andExpect(jsonPath("$.message").exists())
         .andDo(print());
   }
 

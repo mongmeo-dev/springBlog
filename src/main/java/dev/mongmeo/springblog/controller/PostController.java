@@ -1,13 +1,25 @@
 package dev.mongmeo.springblog.controller;
 
+import dev.mongmeo.springblog.dto.ErrorResponseDto;
+import dev.mongmeo.springblog.dto.PostRequestDto;
 import dev.mongmeo.springblog.dto.PostResponseDto;
 import dev.mongmeo.springblog.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,5 +36,31 @@ public class PostController {
   @GetMapping
   public List<PostResponseDto> getAllPosts() {
     return postService.getAllPosts();
+  }
+
+  @Operation(summary = "게시물 등록하기")
+  @ApiResponse(responseCode = "200", description = "게시물 등록 완료")
+  @ApiResponse(
+      responseCode = "400",
+      description = "게시물 validation 실패",
+      content = {@Content(schema = @Schema(oneOf = {ErrorResponseDto.class}))})
+  @PostMapping
+  public PostResponseDto createPost(
+      @Parameter @RequestBody @Valid PostRequestDto dto) {
+    return postService.createPost(dto);
+  }
+
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<ErrorResponseDto> validException(MethodArgumentNotValidException e) {
+    String message = e.getFieldError().getField()
+        + " : "
+        + e.getBindingResult().getAllErrors().get(0).getDefaultMessage();
+
+    ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
+        .code(400)
+        .message(message)
+        .build();
+
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
   }
 }
