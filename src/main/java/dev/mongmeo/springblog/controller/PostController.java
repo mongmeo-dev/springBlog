@@ -1,7 +1,7 @@
 package dev.mongmeo.springblog.controller;
 
 import dev.mongmeo.springblog.dto.ErrorResponseDto;
-import dev.mongmeo.springblog.dto.PostRequestDto;
+import dev.mongmeo.springblog.dto.PostCreateDto;
 import dev.mongmeo.springblog.dto.PostResponseDto;
 import dev.mongmeo.springblog.exception.NotFoundException;
 import dev.mongmeo.springblog.service.PostService;
@@ -61,7 +61,7 @@ public class PostController {
       content = {@Content(schema = @Schema(oneOf = {ErrorResponseDto.class}))})
   @PostMapping
   public PostResponseDto createPost(
-      @Parameter @RequestBody @Valid PostRequestDto dto) {
+      @Parameter @RequestBody @Valid PostCreateDto dto) {
     return postService.createPost(dto);
   }
 

@@ -3,7 +3,7 @@ package dev.mongmeo.springblog.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import dev.mongmeo.springblog.dto.PostRequestDto;
+import dev.mongmeo.springblog.dto.PostCreateDto;
 import dev.mongmeo.springblog.dto.PostResponseDto;
 import dev.mongmeo.springblog.entity.PostEntity;
 import dev.mongmeo.springblog.exception.NotFoundException;
@@ -69,7 +69,7 @@ class PostServiceTest {
   @DisplayName("새 포스트가 등록되어야 함")
   void createPostTest() {
     // given
-    PostRequestDto dto = PostRequestDto.builder()
+    PostCreateDto dto = PostCreateDto.builder()
         .title("test title")
         .content("test content")
         .build();

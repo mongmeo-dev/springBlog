@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.mongmeo.springblog.dto.PostRequestDto;
+import dev.mongmeo.springblog.dto.PostCreateDto;
 import dev.mongmeo.springblog.dto.PostResponseDto;
 import dev.mongmeo.springblog.entity.PostEntity;
 import dev.mongmeo.springblog.exception.NotFoundException;
@@ -90,7 +90,7 @@ class PostControllerTest {
   @DisplayName("게시물을 만들어 반환해야 함")
   void createPostTest() throws Exception {
     // given
-    PostRequestDto dto = PostRequestDto.builder()
+    PostCreateDto dto = PostCreateDto.builder()
         .title("test title")
         .content("test content")
         .build();
@@ -127,7 +127,7 @@ class PostControllerTest {
   @DisplayName("validation에 실패하면 상태코드 400을 내려줘야 함")
   void createPostValidationTest() throws Exception {
     // given
-    PostRequestDto dto = PostRequestDto.builder()
+    PostCreateDto dto = PostCreateDto.builder()
         .title("test title test title test title test title test title test title test title test ")
         .content("test content")
         .build();

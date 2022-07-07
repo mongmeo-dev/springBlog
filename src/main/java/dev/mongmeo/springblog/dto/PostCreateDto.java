@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PostRequestDto {
+public class PostCreateDto {
 
   @Schema(description = "게시물 제목", example = "게시물 제목입니다.")
   @NotBlank

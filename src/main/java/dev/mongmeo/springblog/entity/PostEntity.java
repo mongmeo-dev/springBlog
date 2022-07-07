@@ -1,6 +1,6 @@
 package dev.mongmeo.springblog.entity;
 
-import dev.mongmeo.springblog.dto.PostRequestDto;
+import dev.mongmeo.springblog.dto.PostCreateDto;
 import dev.mongmeo.springblog.dto.PostResponseDto;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
@@ -54,7 +54,7 @@ public class PostEntity {
         .build();
   }
 
-  public static PostEntity fromRequestDto(PostRequestDto dto) {
+  public static PostEntity fromRequestDto(PostCreateDto dto) {
     return PostEntity.builder()
         .title(dto.getTitle())
         .content(dto.getContent())
