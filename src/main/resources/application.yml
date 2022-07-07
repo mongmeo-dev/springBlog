@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: ENC(pqKr01+9m90wJTW4kf/ZwWHv/U9UVcqeqOdF4T6ppvB+lAKkY1ry1oIcJStA+Y/x)
+    username: ENC(+Vltkl7cvDg71qVXEyMoCw==)
+    password: ENC(wMHs50BVfRUCxCNHm3T03EfO9pcycbx0)
+
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
