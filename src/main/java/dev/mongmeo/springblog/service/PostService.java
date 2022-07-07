@@ -49,4 +49,8 @@ public class PostService {
 
     return PostEntity.toResponseDto(savedPost);
   }
+
+  public void deletePost(long id) {
+    postRepository.deleteById(id);
+  }
 }

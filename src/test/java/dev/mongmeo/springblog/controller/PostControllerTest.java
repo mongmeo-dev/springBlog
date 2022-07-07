@@ -3,6 +3,7 @@ package dev.mongmeo.springblog.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -201,6 +202,15 @@ class PostControllerTest {
         .andExpect(jsonPath("$.code").value("404"))
         .andExpect(jsonPath("$.message").exists())
         .andDo(print());
+  }
+
+  @Test
+  @DisplayName("삭제 성공시 상태코드 200과 '삭제 완료' 문구를 응답으로 내려줘야 함")
+  void deletePostTest() throws Exception {
+    // when, then
+    mockMvc.perform(MockMvcRequestBuilders.delete("/api/posts/1"))
+        .andExpect(status().isOk())
+        .andExpect(content().string("삭제 완료"));
   }
 
   private List<PostResponseDto> createDummyPosts() {

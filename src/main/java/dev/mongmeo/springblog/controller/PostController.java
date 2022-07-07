@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -79,6 +80,17 @@ public class PostController {
       @Parameter(description = "게시물 업데이트 내용") @RequestBody PostUpdateDto dto
   ) {
     return postService.updatePost(id, dto);
+  }
+
+  @Operation(summary = "아이디로 게시물 삭제")
+  @ApiResponse(responseCode = "200", description = "게시물 삭제 성공")
+  @DeleteMapping("/{id}")
+  public ResponseEntity<String> deletePost(
+      @Parameter(description = "게시물 id") @PathVariable("id") long id
+  ) {
+    postService.deletePost(id);
+
+    return ResponseEntity.status(HttpStatus.OK).body("삭제 완료");
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)

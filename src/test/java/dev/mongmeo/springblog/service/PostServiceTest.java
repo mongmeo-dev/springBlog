@@ -1,6 +1,7 @@
 package dev.mongmeo.springblog.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import dev.mongmeo.springblog.dto.PostCreateDto;
@@ -110,6 +111,20 @@ class PostServiceTest {
     assertThrows(NotFoundException.class, () -> {
       postService.updatePost(10000, new PostUpdateDto());
     });
+  }
+
+  @Test
+  @DisplayName("전달받은 id를 가진 게시물을 삭제해야 함")
+  void deletePostTest() {
+    // given
+    long id = createDummyPostsAndGetLastPostId();
+
+    // when
+    postService.deletePost(id);
+
+    // then
+    assertEquals(9, postRepository.count());
+    assertFalse(postRepository.findById(id).isPresent());
   }
 
   private long createDummyPostsAndGetLastPostId() {
