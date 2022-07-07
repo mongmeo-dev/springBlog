@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import dev.mongmeo.springblog.dto.PostCreateDto;
 import dev.mongmeo.springblog.dto.PostResponseDto;
+import dev.mongmeo.springblog.dto.PostUpdateDto;
 import dev.mongmeo.springblog.entity.PostEntity;
 import dev.mongmeo.springblog.exception.NotFoundException;
 import dev.mongmeo.springblog.repository.PostRepository;
@@ -30,7 +31,7 @@ class PostServiceTest {
   @DisplayName("모든 게시물 리스트를 반환해야 함")
   void getAllPostTest() {
     // given
-    createDummyPosts();
+    createDummyPostsAndGetLastPostId();
 
     // when
     List<PostResponseDto> allPosts = postService.getAllPosts();
@@ -43,10 +44,9 @@ class PostServiceTest {
   @DisplayName("특정 id를 가진 게시물을 반환해야 함")
   void getPostByIdTest() {
     // given
-    createDummyPosts();
+    long id = createDummyPostsAndGetLastPostId();
 
     // when
-    long id = 2;
     PostResponseDto foundPost = postService.getPostById(id);
 
     //then
@@ -57,7 +57,7 @@ class PostServiceTest {
   @DisplayName("특정 id를 가진 게시물이 없다면 NotFoundException을 발생시켜야 함")
   void getPostByIdExceptionTest() {
     // given
-    createDummyPosts();
+    createDummyPostsAndGetLastPostId();
 
     // when, then
     assertThrows(NotFoundException.class, () -> {
@@ -84,14 +84,45 @@ class PostServiceTest {
     assertEquals(savedPost.getContent(), foundPost.getContent());
   }
 
-  private void createDummyPosts() {
+  @Test
+  @DisplayName("요청에 따라 업데이트 된 게시물을 반환해야 함")
+  void updatePostTest() {
+    // given
+    long id = createDummyPostsAndGetLastPostId();
+
+    // when
+    PostUpdateDto dto = PostUpdateDto.builder().title("hello").content("world").build();
+    PostResponseDto updatedPost = postService.updatePost(id, dto);
+
+    //then
+    assertEquals(updatedPost.getId(), id);
+    assertEquals(updatedPost.getTitle(), dto.getTitle());
+    assertEquals(updatedPost.getContent(), dto.getContent());
+  }
+
+  @Test
+  @DisplayName("업데이트 요청시 특정 id를 가진 게시물이 없다면 NotFoundException을 발생시켜야 함")
+  void updatePostExceptionTest() {
+    // given
+    createDummyPostsAndGetLastPostId();
+
+    // when, then
+    assertThrows(NotFoundException.class, () -> {
+      postService.updatePost(10000, new PostUpdateDto());
+    });
+  }
+
+  private long createDummyPostsAndGetLastPostId() {
+    PostEntity entity = new PostEntity();
     for (int i = 0; i < 10; i++) {
       PostEntity newPost = PostEntity.builder()
           .title("title" + i)
           .content("content" + i)
           .build();
 
-      postRepository.save(newPost);
+      entity = postRepository.save(newPost);
     }
+
+    return entity.getId();
   }
 }

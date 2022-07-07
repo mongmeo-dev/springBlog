@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.mongmeo.springblog.dto.PostCreateDto;
 import dev.mongmeo.springblog.dto.PostResponseDto;
+import dev.mongmeo.springblog.dto.PostUpdateDto;
 import dev.mongmeo.springblog.entity.PostEntity;
 import dev.mongmeo.springblog.exception.NotFoundException;
 import dev.mongmeo.springblog.service.PostService;
@@ -143,6 +144,61 @@ class PostControllerTest {
         )
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.code").exists())
+        .andExpect(jsonPath("$.message").exists())
+        .andDo(print());
+  }
+
+  @Test
+  @DisplayName("요청에 따라 업데이트 된 게시물을 반환해야 함")
+  void updatePostTest() throws Exception {
+    // given
+    PostUpdateDto dto = PostUpdateDto.builder()
+        .title("update test title")
+        .content("update test content")
+        .build();
+
+    PostResponseDto response = PostResponseDto.builder()
+        .id(1L)
+        .title(dto.getTitle())
+        .content(dto.getContent())
+        .createdAt(LocalDateTime.now())
+        .updatedAt(LocalDateTime.now())
+        .build();
+
+    Mockito.when(postService.updatePost(anyLong(), any())).thenReturn(response);
+
+    // when, then
+    ObjectMapper objectMapper = new ObjectMapper();
+    String dtoJson = objectMapper.writeValueAsString(dto);
+    mockMvc.perform(
+            MockMvcRequestBuilders.put("/api/posts/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(dtoJson)
+        )
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").exists())
+        .andExpect(jsonPath("$.title").value(dto.getTitle()))
+        .andExpect(jsonPath("$.content").value(dto.getContent()))
+        .andExpect(jsonPath("$.createdAt").exists())
+        .andExpect(jsonPath("$.updatedAt").exists());
+  }
+
+  @Test
+  @DisplayName("업데이트 시도시 PathVariable로 전달한 id를 가진 게시물이 없다면 상태코드 404를 내려줘야 함")
+  void updatePostExceptionTest() throws Exception {
+    // given
+    Mockito.when(postService.updatePost(anyLong(), any())).thenThrow(NotFoundException.class);
+
+    // when, then
+    ObjectMapper objectMapper = new ObjectMapper();
+    String dtoJson = objectMapper.writeValueAsString(new PostUpdateDto());
+    mockMvc.perform(
+            MockMvcRequestBuilders.put("/api/posts/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(dtoJson)
+        )
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.code").value("404"))
         .andExpect(jsonPath("$.message").exists())
         .andDo(print());
   }

@@ -2,6 +2,7 @@ package dev.mongmeo.springblog.service;
 
 import dev.mongmeo.springblog.dto.PostCreateDto;
 import dev.mongmeo.springblog.dto.PostResponseDto;
+import dev.mongmeo.springblog.dto.PostUpdateDto;
 import dev.mongmeo.springblog.entity.PostEntity;
 import dev.mongmeo.springblog.exception.NotFoundException;
 import dev.mongmeo.springblog.repository.PostRepository;
@@ -30,6 +31,21 @@ public class PostService {
 
   public PostResponseDto createPost(PostCreateDto dto) {
     PostEntity savedPost = postRepository.save(PostEntity.fromRequestDto(dto));
+
+    return PostEntity.toResponseDto(savedPost);
+  }
+
+  public PostResponseDto updatePost(long id, PostUpdateDto dto) {
+    PostEntity foundPost = postRepository.findById(id).orElseThrow(NotFoundException::new);
+
+    if (dto.getTitle() != null && !dto.getTitle().isBlank()) {
+      foundPost.setTitle(dto.getTitle());
+    }
+    if (dto.getContent() != null && !dto.getContent().isBlank()) {
+      foundPost.setContent(dto.getContent());
+    }
+
+    PostEntity savedPost = postRepository.save(foundPost);
 
     return PostEntity.toResponseDto(savedPost);
   }
