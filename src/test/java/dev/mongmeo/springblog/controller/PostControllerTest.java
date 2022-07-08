@@ -58,6 +58,18 @@ class PostControllerTest {
   }
 
   @Test
+  @DisplayName("모든 게시물 수를 반환받아야 함")
+  void getPostCount() throws Exception {
+    // given
+    Mockito.when(postService.getPostsCount()).thenReturn(10L);
+
+    // when, then
+    mockMvc.perform(MockMvcRequestBuilders.get("/api/posts/count"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.count").value(10));
+  }
+
+  @Test
   @DisplayName("PathVariable로 id를 전달하면 포스트 하나를 받아야 함")
   void getPostByIdTest() throws Exception {
     // given

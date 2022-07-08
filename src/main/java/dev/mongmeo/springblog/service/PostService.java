@@ -31,6 +31,10 @@ public class PostService {
     return posts.stream().map(PostEntity::toResponseDto).collect(Collectors.toList());
   }
 
+  public long getPostsCount() {
+    return postRepository.count();
+  }
+
   public PostResponseDto getPostById(long id) {
     PostEntity foundPost = postRepository.findById(id).orElseThrow(NotFoundException::new);
 

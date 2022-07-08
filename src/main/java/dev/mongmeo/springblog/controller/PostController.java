@@ -16,6 +16,7 @@ import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,6 +45,18 @@ public class PostController {
       @Parameter(description = "페이지 번호") @RequestParam(name = "page", required = false, defaultValue = "") String page,
       @Parameter(description = "한 페이지에 표시될 게시물 수") @RequestParam(name = "size", required = false, defaultValue = "") String size) {
     return postService.getAllPosts(page, size);
+  }
+
+  @Operation(summary = "모든 게시물 수 가져오기")
+  @ApiResponse(responseCode = "200", description = "모든 게시물 수 반환", content = {
+      @Content(schema = @Schema(example = "{\"count\": \"7\"}"))})
+  @GetMapping("/count")
+  public ResponseEntity<String> getPostsCount() {
+    long count = postService.getPostsCount();
+
+    return ResponseEntity.status(HttpStatus.OK)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body("{\"count\": \"" + count + "\"}");
   }
 
   @Operation(summary = "아이디로 게시물 단건 조회")

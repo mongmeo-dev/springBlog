@@ -55,6 +55,19 @@ class PostServiceTest {
   }
 
   @Test
+  @DisplayName("모든 게시물 수를 반환해야 함")
+  void getPostsCountTest() {
+    // given
+    createDummyPostsAndGetLastPostId();
+
+    // when
+    long count = postService.getPostsCount();
+
+    // then
+    assertEquals(10, count);
+  }
+
+  @Test
   @DisplayName("특정 id를 가진 게시물을 반환해야 함")
   void getPostByIdTest() {
     // given
