@@ -35,10 +35,23 @@ class PostServiceTest {
     createDummyPostsAndGetLastPostId();
 
     // when
-    List<PostResponseDto> allPosts = postService.getAllPosts();
+    List<PostResponseDto> allPosts = postService.getAllPosts("", "");
 
     //then
     assertEquals(10, allPosts.size());
+  }
+
+  @Test
+  @DisplayName("페이지 정보와 함께 호출시 해당 페이지의 게시물 리스트를 반환해야 함")
+  void getAllPostWithPage() {
+    // given
+    createDummyPostsAndGetLastPostId();
+
+    // when
+    List<PostResponseDto> pagePosts = postService.getAllPosts("1", "3");
+
+    // then
+    assertEquals(3, pagePosts.size());
   }
 
   @Test

@@ -43,7 +43,7 @@ class PostControllerTest {
   @DisplayName("모든 게시물 리스트를 json 형식의 postResponseDto 리스트로 받아야 함")
   void getAllPostsTest() throws Exception {
     // given
-    Mockito.when(postService.getAllPosts()).thenReturn(createDummyPosts());
+    Mockito.when(postService.getAllPosts(any(), any())).thenReturn(createDummyPosts());
 
     // when, then
     mockMvc.perform(MockMvcRequestBuilders.get("/api/posts"))

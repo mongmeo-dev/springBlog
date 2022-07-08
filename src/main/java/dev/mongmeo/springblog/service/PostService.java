@@ -9,6 +9,7 @@ import dev.mongmeo.springblog.repository.PostRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -17,8 +18,15 @@ public class PostService {
 
   private final PostRepository postRepository;
 
-  public List<PostResponseDto> getAllPosts() {
-    List<PostEntity> posts = postRepository.findAll();
+  public List<PostResponseDto> getAllPosts(String page, String size) {
+    List<PostEntity> posts;
+
+    if (!page.isBlank() && !size.isBlank()) {
+      PageRequest pageRequest = PageRequest.of(Integer.parseInt(page) - 1, Integer.parseInt(size));
+      posts = postRepository.findAll(pageRequest).getContent();
+    } else {
+      posts = postRepository.findAll();
+    }
 
     return posts.stream().map(PostEntity::toResponseDto).collect(Collectors.toList());
   }
