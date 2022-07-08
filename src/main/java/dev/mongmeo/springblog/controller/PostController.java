@@ -2,6 +2,7 @@ package dev.mongmeo.springblog.controller;
 
 import dev.mongmeo.springblog.dto.ErrorResponseDto;
 import dev.mongmeo.springblog.dto.PostCreateDto;
+import dev.mongmeo.springblog.dto.PostPageRequestDto;
 import dev.mongmeo.springblog.dto.PostResponseDto;
 import dev.mongmeo.springblog.dto.PostUpdateDto;
 import dev.mongmeo.springblog.exception.NotFoundException;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -41,10 +43,8 @@ public class PostController {
   @Operation(summary = "모든 게시물 또는 요청한 페이지의 게시물 리스트 가져오기")
   @ApiResponse(responseCode = "200", description = "모든 게시물 리스트 반환 혹은 요청한 페이지의 게시물 리스트 반환")
   @GetMapping
-  public List<PostResponseDto> getAllPosts(
-      @Parameter(description = "페이지 번호") @RequestParam(name = "page", required = false, defaultValue = "") String page,
-      @Parameter(description = "한 페이지에 표시될 게시물 수") @RequestParam(name = "size", required = false, defaultValue = "") String size) {
-    return postService.getAllPosts(page, size);
+  public List<PostResponseDto> getAllPosts(@ModelAttribute @Valid PostPageRequestDto dto) {
+    return postService.getAllPosts(dto.getPage(), dto.getSize());
   }
 
   @Operation(summary = "모든 게시물 수 가져오기")
@@ -96,18 +96,6 @@ public class PostController {
     postService.deletePost(id);
 
     return ResponseEntity.status(HttpStatus.OK).body("삭제 완료");
-  }
-
-  @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<ErrorResponseDto> validException(MethodArgumentNotValidException e) {
-    String message =
-        e.getFieldError().getField() + " : " + e.getBindingResult().getAllErrors().get(0)
-            .getDefaultMessage();
-
-    ErrorResponseDto errorResponseDto = ErrorResponseDto.builder().code(400).message(message)
-        .build();
-
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
   }
 
   @ExceptionHandler(NotFoundException.class)

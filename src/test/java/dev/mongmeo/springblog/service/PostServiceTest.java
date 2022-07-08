@@ -35,7 +35,7 @@ class PostServiceTest {
     createDummyPostsAndGetLastPostId();
 
     // when
-    List<PostResponseDto> allPosts = postService.getAllPosts("", "");
+    List<PostResponseDto> allPosts = postService.getAllPosts(null, null);
 
     //then
     assertEquals(10, allPosts.size());
@@ -48,7 +48,7 @@ class PostServiceTest {
     createDummyPostsAndGetLastPostId();
 
     // when
-    List<PostResponseDto> pagePosts = postService.getAllPosts("1", "3");
+    List<PostResponseDto> pagePosts = postService.getAllPosts(1, 3);
 
     // then
     assertEquals(3, pagePosts.size());

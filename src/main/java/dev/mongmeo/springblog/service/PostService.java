@@ -18,11 +18,11 @@ public class PostService {
 
   private final PostRepository postRepository;
 
-  public List<PostResponseDto> getAllPosts(String page, String size) {
+  public List<PostResponseDto> getAllPosts(Integer page, Integer size) {
     List<PostEntity> posts;
 
-    if (!page.isBlank() && !size.isBlank()) {
-      PageRequest pageRequest = PageRequest.of(Integer.parseInt(page) - 1, Integer.parseInt(size));
+    if (page != null && size != null) {
+      PageRequest pageRequest = PageRequest.of(page - 1, size);
       posts = postRepository.findAll(pageRequest).getContent();
     } else {
       posts = postRepository.findAll();
