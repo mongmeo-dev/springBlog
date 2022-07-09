@@ -42,6 +42,7 @@ public class PostController {
 
   @Operation(summary = "모든 게시물 또는 요청한 페이지의 게시물 리스트 가져오기")
   @ApiResponse(responseCode = "200", description = "모든 게시물 리스트 반환 혹은 요청한 페이지의 게시물 리스트 반환")
+  @ApiResponse(responseCode = "400", description = "페이지 요청에 잘못된 값이 들어옴")
   @GetMapping
   public List<PostResponseDto> getAllPosts(@ModelAttribute @Valid PostPageRequestDto dto) {
     return postService.getAllPosts(dto.getPage(), dto.getSize());
