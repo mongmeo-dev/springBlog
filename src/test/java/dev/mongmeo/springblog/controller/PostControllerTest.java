@@ -59,10 +59,21 @@ class PostControllerTest {
 
   @Test
   @DisplayName("페이지 쿼리스트링에 숫자가 아닌 값을 넘기면 상태코드 400을 내려줘야 함")
-  void getPostWithPageExceptionTest() throws Exception {
+  void getPostWithPageBindingExceptionTest() throws Exception {
     // when, then
     mockMvc.perform(
             MockMvcRequestBuilders.get("/api/posts").queryParam("size", "a").queryParam("page", "b"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("400"))
+        .andExpect(jsonPath("$.message").exists());
+  }
+
+  @Test
+  @DisplayName("페이지 쿼리스트링에 양수가 아닌 값을 넘기면 상태코드 400을 내려줘야 함")
+  void getPostWithPageValidationExceptionTest() throws Exception {
+    // when, then
+    mockMvc.perform(
+            MockMvcRequestBuilders.get("/api/posts").queryParam("size", "0").queryParam("page", "-1"))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.code").value("400"))
         .andExpect(jsonPath("$.message").exists());
