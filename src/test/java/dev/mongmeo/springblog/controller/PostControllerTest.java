@@ -8,9 +8,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.mongmeo.springblog.dto.PostCreateDto;
-import dev.mongmeo.springblog.dto.PostResponseDto;
-import dev.mongmeo.springblog.dto.PostUpdateDto;
+import dev.mongmeo.springblog.dto.post.PostCreateDto;
+import dev.mongmeo.springblog.dto.post.PostResponseDto;
+import dev.mongmeo.springblog.dto.post.PostUpdateDto;
 import dev.mongmeo.springblog.entity.PostEntity;
 import dev.mongmeo.springblog.exception.NotFoundException;
 import dev.mongmeo.springblog.service.PostService;
@@ -118,7 +118,6 @@ class PostControllerTest {
     mockMvc.perform(MockMvcRequestBuilders.get("/api/posts/100"))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.code").value("404"))
-        .andExpect(jsonPath("$.message").exists())
         .andDo(print());
   }
 
@@ -234,7 +233,6 @@ class PostControllerTest {
         )
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.code").value("404"))
-        .andExpect(jsonPath("$.message").exists())
         .andDo(print());
   }
 

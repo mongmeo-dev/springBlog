@@ -1,5 +1,6 @@
 package dev.mongmeo.springblog.entity;
 
+import dev.mongmeo.springblog.dto.comment.CommentResponseDto;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -36,4 +37,13 @@ public class CommentEntity {
 
   @LastModifiedDate
   private LocalDateTime updatedAt;
+
+  public static CommentResponseDto toResponse(CommentEntity entity) {
+    return CommentResponseDto.builder()
+        .id(entity.getId())
+        .content(entity.getContent())
+        .createdAt(entity.getCreatedAt())
+        .updatedAt(entity.getUpdatedAt())
+        .build();
+  }
 }

@@ -4,9 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import dev.mongmeo.springblog.dto.PostCreateDto;
-import dev.mongmeo.springblog.dto.PostResponseDto;
-import dev.mongmeo.springblog.dto.PostUpdateDto;
+import dev.mongmeo.springblog.dto.post.PostCreateDto;
+import dev.mongmeo.springblog.dto.post.PostResponseDto;
+import dev.mongmeo.springblog.dto.post.PostUpdateDto;
 import dev.mongmeo.springblog.entity.PostEntity;
 import dev.mongmeo.springblog.exception.NotFoundException;
 import dev.mongmeo.springblog.repository.PostRepository;

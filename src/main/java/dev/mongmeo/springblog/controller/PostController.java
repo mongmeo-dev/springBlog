@@ -1,11 +1,10 @@
 package dev.mongmeo.springblog.controller;
 
-import dev.mongmeo.springblog.dto.ErrorResponseDto;
-import dev.mongmeo.springblog.dto.PostCreateDto;
-import dev.mongmeo.springblog.dto.PostPageRequestDto;
-import dev.mongmeo.springblog.dto.PostResponseDto;
-import dev.mongmeo.springblog.dto.PostUpdateDto;
-import dev.mongmeo.springblog.exception.NotFoundException;
+import dev.mongmeo.springblog.dto.common.ErrorResponseDto;
+import dev.mongmeo.springblog.dto.post.PostCreateDto;
+import dev.mongmeo.springblog.dto.common.PageRequestDto;
+import dev.mongmeo.springblog.dto.post.PostResponseDto;
+import dev.mongmeo.springblog.dto.post.PostUpdateDto;
 import dev.mongmeo.springblog.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,9 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,7 +26,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -44,7 +40,7 @@ public class PostController {
   @ApiResponse(responseCode = "200", description = "모든 게시물 리스트 반환 혹은 요청한 페이지의 게시물 리스트 반환")
   @ApiResponse(responseCode = "400", description = "페이지 요청에 잘못된 값이 들어옴")
   @GetMapping
-  public List<PostResponseDto> getAllPosts(@ModelAttribute @Valid PostPageRequestDto dto) {
+  public List<PostResponseDto> getAllPosts(@ModelAttribute @Valid PageRequestDto dto) {
     return postService.getAllPosts(dto.getPage(), dto.getSize());
   }
 
@@ -97,13 +93,5 @@ public class PostController {
     postService.deletePost(id);
 
     return ResponseEntity.status(HttpStatus.OK).body("삭제 완료");
-  }
-
-  @ExceptionHandler(NotFoundException.class)
-  public ResponseEntity<ErrorResponseDto> notFoundException(NotFoundException e) {
-    ErrorResponseDto errorResponseDto = ErrorResponseDto.builder().code(404)
-        .message("게시물을 찾을 수 없습니다.").build();
-
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
   }
 }

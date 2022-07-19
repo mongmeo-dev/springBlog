@@ -1,14 +1,16 @@
 package dev.mongmeo.springblog.service;
 
-import dev.mongmeo.springblog.dto.PostCreateDto;
-import dev.mongmeo.springblog.dto.PostResponseDto;
-import dev.mongmeo.springblog.dto.PostUpdateDto;
+import dev.mongmeo.springblog.dto.post.PostCreateDto;
+import dev.mongmeo.springblog.dto.post.PostResponseDto;
+import dev.mongmeo.springblog.dto.post.PostUpdateDto;
 import dev.mongmeo.springblog.entity.PostEntity;
 import dev.mongmeo.springblog.exception.NotFoundException;
 import dev.mongmeo.springblog.repository.PostRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 public class PostService {
 
   private final PostRepository postRepository;
+  private final MessageSource messageSource;
 
   public List<PostResponseDto> getAllPosts(Integer page, Integer size) {
     List<PostEntity> posts;
@@ -36,7 +39,11 @@ public class PostService {
   }
 
   public PostResponseDto getPostById(long id) {
-    PostEntity foundPost = postRepository.findById(id).orElseThrow(NotFoundException::new);
+    PostEntity foundPost = postRepository.findById(id).orElseThrow(() -> {
+      throw new NotFoundException(
+          messageSource.getMessage("post_not_found", null, LocaleContextHolder.getLocale())
+      );
+    });
 
     return PostEntity.toResponseDto(foundPost);
   }
@@ -48,7 +55,11 @@ public class PostService {
   }
 
   public PostResponseDto updatePost(long id, PostUpdateDto dto) {
-    PostEntity foundPost = postRepository.findById(id).orElseThrow(NotFoundException::new);
+    PostEntity foundPost = postRepository.findById(id).orElseThrow(() -> {
+      throw new NotFoundException(
+          messageSource.getMessage("post_not_found", null, LocaleContextHolder.getLocale())
+      );
+    });
 
     if (dto.getTitle() != null && !dto.getTitle().isBlank()) {
       foundPost.setTitle(dto.getTitle());

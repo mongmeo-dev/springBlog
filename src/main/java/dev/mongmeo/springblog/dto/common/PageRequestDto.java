@@ -1,4 +1,4 @@
-package dev.mongmeo.springblog.dto;
+package dev.mongmeo.springblog.dto.common;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import javax.validation.constraints.Positive;
@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PostPageRequestDto {
+public class PageRequestDto {
 
   @Schema(description = "페이지 번호")
   @Positive

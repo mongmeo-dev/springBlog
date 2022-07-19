@@ -1,4 +1,4 @@
-package dev.mongmeo.springblog.dto;
+package dev.mongmeo.springblog.dto.post;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import javax.validation.constraints.NotBlank;

@@ -1,7 +1,7 @@
 package dev.mongmeo.springblog.entity;
 
-import dev.mongmeo.springblog.dto.PostCreateDto;
-import dev.mongmeo.springblog.dto.PostResponseDto;
+import dev.mongmeo.springblog.dto.post.PostCreateDto;
+import dev.mongmeo.springblog.dto.post.PostResponseDto;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;

@@ -1,6 +1,6 @@
 package dev.mongmeo.springblog.exception;
 
-import dev.mongmeo.springblog.dto.ErrorResponseDto;
+import dev.mongmeo.springblog.dto.common.ErrorResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
@@ -22,6 +22,14 @@ public class GlobalExceptionHandler {
         .build();
 
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDto);
+  }
+
+  @ExceptionHandler(NotFoundException.class)
+  public ResponseEntity<ErrorResponseDto> notFoundException(NotFoundException e) {
+    ErrorResponseDto errorResponseDto = ErrorResponseDto.builder().code(404)
+        .message(e.getMessage()).build();
+
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
   }
 
 }
