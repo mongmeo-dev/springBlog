@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import dev.mongmeo.springblog.dto.comment.CommentResponseDto;
 import dev.mongmeo.springblog.entity.CommentEntity;
 import dev.mongmeo.springblog.entity.PostEntity;
+import dev.mongmeo.springblog.exception.NotFoundException;
 import dev.mongmeo.springblog.service.CommentService;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -75,6 +76,31 @@ class CommentControllerTest {
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.code").value("400"))
         .andExpect(jsonPath("$.message").exists());
+  }
+
+  @Test
+  @DisplayName("특정 게시물에 달린 댓글 수를 반환해야 함")
+  void getCommentsCountTest() throws Exception {
+    // given
+    Mockito.when(commentService.getCommentsCountByPostId(anyLong())).thenReturn(5L);
+
+    // when, then
+    mockMvc.perform(MockMvcRequestBuilders.get("/api/posts/1/comments/count"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.count").value(5));
+  }
+
+  @Test
+  @DisplayName("댓글 수 조회시 게시물이 존재하지 않으면 상태코드 404로 응답해야 함")
+  void getCommentsCountPostNotFoundTest() throws Exception {
+    // given
+    Mockito.when(commentService.getCommentsCountByPostId(anyLong()))
+        .thenThrow(NotFoundException.class);
+
+    // when, then
+    mockMvc.perform(MockMvcRequestBuilders.get("/api/posts/1/comments/count"))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.code").value(404));
   }
 
   private List<CommentResponseDto> createDummyComments() {

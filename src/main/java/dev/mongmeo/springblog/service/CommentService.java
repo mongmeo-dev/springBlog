@@ -2,10 +2,16 @@ package dev.mongmeo.springblog.service;
 
 import dev.mongmeo.springblog.dto.comment.CommentResponseDto;
 import dev.mongmeo.springblog.entity.CommentEntity;
+import dev.mongmeo.springblog.entity.PostEntity;
 import dev.mongmeo.springblog.exception.NotFoundException;
 import dev.mongmeo.springblog.repository.CommentRepository;
 import dev.mongmeo.springblog.repository.PostRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -37,13 +43,20 @@ public class CommentService {
     return comments.stream().map(CommentEntity::toResponse).collect(Collectors.toList());
   }
 
-  private void validatePostId(long postId) {
-    boolean isExist = postRepository.existsById(postId);
-    if (!isExist) {
+  public long getCommentsCountByPostId(long postId) {
+    PostEntity post = validatePostId(postId);
+
+    return commentRepository.countByPost(post);
+  }
+
+  private PostEntity validatePostId(long postId) {
+    Optional<PostEntity> postEntity = postRepository.findById(postId);
+    if (postEntity.isEmpty()) {
       throw new NotFoundException(
           messageSource.getMessage("post_not_found", null, LocaleContextHolder.getLocale())
       );
     }
+    return postEntity.get();
   }
 
 }

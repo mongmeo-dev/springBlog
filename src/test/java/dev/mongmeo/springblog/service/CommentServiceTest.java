@@ -54,6 +54,19 @@ class CommentServiceTest {
     assertEquals(3, pageComments.size());
   }
 
+  @Test
+  @DisplayName("특정 게시물에 달린 모든 댓글 수를 반환해야 함.")
+  void getCommentsCountByPostId() {
+    // given
+    long postId = createDummyCommentsAndPostAndReturnPostId();
+
+    // when
+    long commentsCount = commentService.getCommentsCountByPostId(postId);
+
+    // then
+    assertEquals(10, commentsCount);
+  }
+
   private long createDummyCommentsAndPostAndReturnPostId() {
     PostEntity newPost = PostEntity.builder().title("title").content("content").build();
     PostEntity savedPost = postRepository.save(newPost);
