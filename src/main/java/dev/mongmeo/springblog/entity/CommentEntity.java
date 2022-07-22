@@ -1,5 +1,6 @@
 package dev.mongmeo.springblog.entity;
 
+import dev.mongmeo.springblog.dto.comment.CommentCreateDto;
 import dev.mongmeo.springblog.dto.comment.CommentResponseDto;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
@@ -44,6 +45,13 @@ public class CommentEntity {
         .content(entity.getContent())
         .createdAt(entity.getCreatedAt())
         .updatedAt(entity.getUpdatedAt())
+        .build();
+  }
+
+  public static CommentEntity fromDto(PostEntity post, CommentCreateDto dto) {
+    return CommentEntity.builder()
+        .post(post)
+        .content(dto.getContent())
         .build();
   }
 }

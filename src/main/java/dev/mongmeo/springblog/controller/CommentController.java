@@ -1,5 +1,6 @@
 package dev.mongmeo.springblog.controller;
 
+import dev.mongmeo.springblog.dto.comment.CommentCreateDto;
 import dev.mongmeo.springblog.dto.comment.CommentResponseDto;
 import dev.mongmeo.springblog.dto.common.ErrorResponseDto;
 import dev.mongmeo.springblog.dto.common.PageRequestDto;
@@ -19,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -54,5 +57,17 @@ public class CommentController {
 
     return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
         .body("{\"count\": \"" + count + "\"}");
+  }
+
+  @Operation(summary = "댓글 작성하기")
+  @ApiResponse(responseCode = "200", description = "댓글 생성 성공")
+  @ApiResponse(responseCode = "404", description = "게시물이 존재하지 않음", content = {
+      @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+  })
+  @PostMapping
+  public CommentResponseDto createComment(
+      @Parameter(description = "게시물 id") @PathVariable("postId") long postId,
+      @RequestBody @Valid CommentCreateDto dto) {
+    return commentService.createComment(postId, dto);
   }
 }

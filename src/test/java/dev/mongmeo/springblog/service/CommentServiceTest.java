@@ -2,6 +2,7 @@ package dev.mongmeo.springblog.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import dev.mongmeo.springblog.dto.comment.CommentCreateDto;
 import dev.mongmeo.springblog.dto.comment.CommentResponseDto;
 import dev.mongmeo.springblog.entity.CommentEntity;
 import dev.mongmeo.springblog.entity.PostEntity;
@@ -65,6 +66,22 @@ class CommentServiceTest {
 
     // then
     assertEquals(10, commentsCount);
+  }
+
+  @Test
+  @DisplayName("새 댓글이 등록되어야 함")
+  void createCommentTest() {
+    // given
+    long postId = createDummyCommentsAndPostAndReturnPostId();
+    CommentCreateDto dto = new CommentCreateDto();
+    dto.setContent("test content");
+
+    // when
+    CommentResponseDto savedComment = commentService.createComment(postId, dto);
+
+    // then
+    CommentEntity foundComment = commentRepository.findById(savedComment.getId()).get();
+    assertEquals(savedComment.getContent(), foundComment.getContent());
   }
 
   private long createDummyCommentsAndPostAndReturnPostId() {

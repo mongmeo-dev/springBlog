@@ -1,15 +1,12 @@
 package dev.mongmeo.springblog.service;
 
+import dev.mongmeo.springblog.dto.comment.CommentCreateDto;
 import dev.mongmeo.springblog.dto.comment.CommentResponseDto;
 import dev.mongmeo.springblog.entity.CommentEntity;
 import dev.mongmeo.springblog.entity.PostEntity;
 import dev.mongmeo.springblog.exception.NotFoundException;
 import dev.mongmeo.springblog.repository.CommentRepository;
 import dev.mongmeo.springblog.repository.PostRepository;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,7 +26,7 @@ public class CommentService {
 
 
   public List<CommentResponseDto> getAllCommentsByPostId(long postId, Integer page, Integer size) {
-    validatePostId(postId);
+    getPostOrThrowException(postId);
 
     List<CommentEntity> comments;
 
@@ -44,12 +41,19 @@ public class CommentService {
   }
 
   public long getCommentsCountByPostId(long postId) {
-    PostEntity post = validatePostId(postId);
+    PostEntity post = getPostOrThrowException(postId);
 
     return commentRepository.countByPost(post);
   }
 
-  private PostEntity validatePostId(long postId) {
+  public CommentResponseDto createComment(long postId, CommentCreateDto dto) {
+    PostEntity post = getPostOrThrowException(postId);
+    CommentEntity savedComment = commentRepository.save(CommentEntity.fromDto(post, dto));
+
+    return CommentEntity.toResponse(savedComment);
+  }
+
+  private PostEntity getPostOrThrowException(long postId) {
     Optional<PostEntity> postEntity = postRepository.findById(postId);
     if (postEntity.isEmpty()) {
       throw new NotFoundException(

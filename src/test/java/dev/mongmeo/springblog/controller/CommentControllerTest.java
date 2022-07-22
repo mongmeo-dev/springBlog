@@ -6,7 +6,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.mongmeo.springblog.dto.comment.CommentCreateDto;
 import dev.mongmeo.springblog.dto.comment.CommentResponseDto;
+import dev.mongmeo.springblog.dto.post.PostCreateDto;
 import dev.mongmeo.springblog.entity.CommentEntity;
 import dev.mongmeo.springblog.entity.PostEntity;
 import dev.mongmeo.springblog.exception.NotFoundException;
@@ -22,6 +25,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -102,6 +106,60 @@ class CommentControllerTest {
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.code").value(404));
   }
+
+  @Test
+  @DisplayName("댓글을 만들어 반환해야 함")
+  void createCommentTest() throws Exception {
+    // given
+    CommentCreateDto dto = new CommentCreateDto();
+    dto.setContent("content");
+
+    CommentResponseDto response = CommentResponseDto.builder()
+        .id(1L)
+        .content(dto.getContent())
+        .createdAt(LocalDateTime.now())
+        .updatedAt(LocalDateTime.now())
+        .build();
+    Mockito.when(commentService.createComment(anyLong(), any())).thenReturn(response);
+
+    // when, then
+    ObjectMapper objectMapper = new ObjectMapper();
+    String dtoJson = objectMapper.writeValueAsString(dto);
+    mockMvc.perform(
+            MockMvcRequestBuilders
+                .post("/api/posts/1/comments")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(dtoJson)
+        )
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").exists())
+        .andExpect(jsonPath("$.content").value("content"))
+        .andExpect(jsonPath("$.createdAt").exists())
+        .andExpect(jsonPath("$.updatedAt").exists());
+  }
+
+  @Test
+  @DisplayName("validation에 실패하면 상태코드 400을 내려줘야 함")
+  void createPostValidationTest() throws Exception {
+    // given
+    CommentCreateDto dto = new CommentCreateDto();
+    dto.setContent("");
+
+    // when, then
+    ObjectMapper objectMapper = new ObjectMapper();
+    String dtoJson = objectMapper.writeValueAsString(dto);
+    mockMvc.perform(
+            MockMvcRequestBuilders
+                .post("/api/posts/1/comments")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(dtoJson)
+        )
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").exists())
+        .andExpect(jsonPath("$.message").exists())
+        .andDo(print());
+  }
+
 
   private List<CommentResponseDto> createDummyComments() {
     List<CommentResponseDto> comments = new ArrayList<>();
